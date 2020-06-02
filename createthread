@@ -1,0 +1,39 @@
+#include <iostream>
+#include <windows.h>
+
+using namespace std;
+
+HANDLE cout_mutex; //创建锁
+DWORD WINAPI myThread(LPVOID lpParamter)  //创建多线程函数
+{
+	//cout << "furk the multithread! \n";
+	int *a = (int *)lpParamter;
+	WaitForSingleObject(cout_mutex, INFINITE); //等待锁
+	cout << "I have " << a[0] << " dolords!\n";
+	ReleaseMutex(cout_mutex); //释放锁
+	return 0;
+}
+template <class T>  //模版类加法
+T add(const T &x, const T &y)
+{
+	T sum = 0;
+	sum = x + y;
+	return sum;
+}
+
+int main()
+{
+	int a[10] = {0,0};
+	cout_mutex = CreateMutex(NULL, FALSE, NULL); //赋值锁
+	for (int i = 0; i < 10; i++)
+	{
+		a[i] = i;
+		HANDLE hThread = CreateThread(NULL, 0, myThread, a + i, 0, NULL); //创建多线程
+		//WaitForSingleObject(hThread, INFINITE);
+	}
+	//void*  hThread = CreateThread(NULL, 0, myThread, a, 0, NULL);
+	int sum = add(5, 6);
+	//WaitForSingleObject(hThread, INFINITE);  //等待线程结束
+	system("pause");
+	return 0;
+}
